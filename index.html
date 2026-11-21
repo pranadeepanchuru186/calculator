@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="te">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>చీటీ మేనేజర్</title>
+    <style>
+      :root {
+        --bg: #0f1724;
+        --card: #0b1220;
+        --accent: #0f60d6;
+        --accent-soft: rgba(15, 96, 214, 0.12);
+        --muted: #94a3b8;
+        --text: #e6eef8;
+        --border: #1f2937;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(
+          circle at top,
+          #1f2937 0%,
+          #0b1220 50%,
+          #020617 100%
+        );
+        color: var(--text);
+        font-family:
+          Inter,
+          system-ui,
+          Segoe UI,
+          Arial,
+          sans-serif;
+      }
+      .wrap {
+        max-width: 1200px;
+        margin: 24px auto;
+        padding: 18px;
+      }
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+      }
+      .brand {
+        font-size: 1.35rem;
+        font-weight: 700;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .tab {
+        padding: 10px 16px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        cursor: pointer;
+        user-select: none;
+      }
+      .tab.active {
+        background: linear-gradient(135deg, var(--accent), #60a5fa);
+        color: #051b3a;
+        border-color: transparent;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        margin-bottom: 22px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: minmax(150px, 200px) 1fr;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      label {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      input[type="text"],
+      input[type="number"],
+      select,
+      button {
+        font: inherit;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        outline: none;
+      }
+      button {
+        border: none;
+        cursor: pointer;
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-weight: 600;
+      }
+      .btn {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn.outline {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: var(--text);
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .result {
+        display: grid;
+        gap: 10px;
+        padding: 18px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .small {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      table {
+        width: auto;
+        min-width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        table-layout: auto;
+      }
+      .table-wrapper {
+        overflow: auto;
+        position: relative;
+      }
+      th,
+      td {
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        vertical-align: middle;
+        white-space: nowrap;
+        min-width: 120px;
+      }
+      th {
+        background: rgba(255, 255, 255, 0.03);
+        text-align: left;
+      }
+      td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      thead th:first-child,
+      tbody td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background: rgba(11, 18, 32, 0.96);
+      }
+      thead th:first-child {
+        z-index: 3;
+      }
+      tbody td:first-child {
+        min-width: 180px;
+      }
+      input.row-field,
+      select.row-field {
+        min-width: 140px;
+        width: 100%;
+        background: #0b1220;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        padding: 8px;
+        color: #e6eef8;
+      }
+      select.row-field option {
+        color: #e6eef8;
+        background: #0b1220;
+      }
+      select.row-field:focus {
+        border-color: rgba(15, 96, 214, 0.8);
+        box-shadow: 0 0 0 2px rgba(15, 96, 214, 0.14);
+      }
+      th,
+      td {
+        min-width: 120px;
+      }
+      .button-panel {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .chitt-button {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        cursor: pointer;
+      }
+      .chitt-button.active {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      canvas {
+        max-width: 100%;
+        border-radius: 16px;
+        margin-top: 16px;
+        display: none;
+      }
+      @media (max-width: 900px) {
+        .row {
+          grid-template-columns: 1fr;
+        }
+        .actions {
+          justify-content: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="nav">
+        <div class="brand">చీటీ మేనేజర్</div>
+        <div class="tabs">
+          <div class="tab active" data-view="calculator">
+            చీటీ క్యాలిక్యులేటర్
+          </div>
+          <div class="tab" data-view="users">సభ్యుల వివరాలు</div>
+        </div>
+      </div>
+
+      <div class="card" id="calculator-view">
+        <h2>చీటీ క్యాలిక్యులేటర్</h2>
+        <div class="grid">
+          <div class="row">
+            <label>చీటీ మొత్తం (Amount)</label
+            ><input
+              id="amount"
+              type="text"
+              inputmode="numeric"
+              placeholder="1,00,000"
+            />
+          </div>
+          <div class="row">
+            <label>ఎన్నవ చీటీ (Chitty Count)</label
+            ><input id="chitty_count" type="number" min="1" value="1" />
+          </div>
+          <div class="row">
+            <label>పాట (Pata)</label
+            ><input
+              id="pata"
+              type="text"
+              inputmode="numeric"
+              placeholder="1,000"
+            />
+          </div>
+          <div class="row">
+            <label>ఎంత మంది సభ్యులు (Members)</label
+            ><input id="members" type="number" min="1" value="10" />
+          </div>
+          <div class="row actions">
+            <button id="calculate" class="btn">Calculate</button>
+            <button id="download-img" class="btn outline">
+              ఇమేజ్ డౌన్లోడ్
+            </button>
+          </div>
+        </div>
+        <div class="result" id="results">
+          <div class="small">
+            తొపుడు: <strong id="rounded-thopudu">-</strong>
+          </div>
+          <div class="small">
+            చెల్లించవలసిన మొత్తం: <strong id="final-pay">-</strong>
+          </div>
+        </div>
+        <canvas id="receipt-canvas" width="1200" height="800"></canvas>
+      </div>
+
+      <div class="card" id="users-view" style="display: none">
+        <h2>సభ్యుల వివరాలు</h2>
+        <div
+          class="button-panel"
+          style="
+            margin-bottom: 16px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+          "
+        >
+          <div class="small">చిట్లు:</div>
+          <div id="chitt-buttons" class="button-panel"></div>
+          <button id="add-row" class="btn outline">Add Member</button>
+          <button id="add-chitt" class="btn outline">Add Chitt</button>
+          <button id="delete-chitt" class="btn outline">Delete Chitt</button>
+          <button id="add-month" class="btn outline">Add Month</button>
+          <button id="delete-month" class="btn outline">Delete Month</button>
+          <button id="export-csv" class="btn outline">Export CSV</button>
+        </div>
+        <div
+          id="no-chitts-message"
+          style="
+            display: none;
+            margin-top: 18px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text);
+          "
+        >
+          No chitts available. Add a chitt to see the user table.
+        </div>
+        <div id="table-wrapper" style="overflow: auto">
+          <table>
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const users = [];
+      let nextId = 1;
+      let chitts = [];
+      let months = [];
+      let selectedChitt = null;
+      let lastCalculation = null;
+      const STORAGE_KEY = "chittiManagerState";
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (
+            !parsed ||
+            !Array.isArray(parsed.users) ||
+            !Array.isArray(parsed.chitts) ||
+            !Array.isArray(parsed.months)
+          )
+            return;
+          users.length = 0;
+          parsed.users.forEach((u) => users.push(u));
+          chitts = parsed.chitts;
+          months = parsed.months;
+          selectedChitt =
+            parsed.selectedChitt && chitts.includes(parsed.selectedChitt)
+              ? parsed.selectedChitt
+              : chitts[0] || "C1";
+          const highestId = users.length
+            ? Math.max(...users.map((u) => Number(u.id) || 0))
+            : 0;
+          nextId = Number(parsed.nextId) || Math.max(4, highestId + 1);
+        } catch (error) {
+          console.warn("Unable to load saved state", error);
+        }
+      }
+
+      const csvTextMap = {
+        చెల్లింది: "Paid",
+        బాకీ: "Due",
+        సస్పెన్డ్: "Suspended",
+      };
+
+      function translateCsvValue(value) {
+        const text = String(value);
+        return csvTextMap[text] || text;
+      }
+
+      function saveState() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ users, chitts, months, nextId, selectedChitt }),
+        );
+      }
+
+      function getRangeEndColumn(colCount) {
+        let letter = "";
+        let n = colCount;
+        while (n > 0) {
+          const rem = (n - 1) % 26;
+          letter = String.fromCharCode(65 + rem) + letter;
+          n = Math.floor((n - 1) / 26);
+        }
+        return letter;
+      }
+
+      function ensurePayments() {
+        users.forEach((u) => {
+          if (!u.payments || typeof u.payments !== "object") u.payments = {};
+          months.forEach((m) => {
+            if (!u.payments[m] || typeof u.payments[m] !== "object")
+              u.payments[m] = { amount: "", paid: "బాకీ" };
+            if (u.payments[m].paid === "") u.payments[m].paid = "బాకీ";
+          });
+        });
+      }
+
+      function setActiveView(view) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((tab) =>
+            tab.classList.toggle("active", tab.dataset.view === view),
+          );
+        document.getElementById("calculator-view").style.display =
+          view === "calculator" ? "block" : "none";
+        document.getElementById("users-view").style.display =
+          view === "users" ? "block" : "none";
+      }
+
+      document
+        .querySelectorAll(".tab")
+        .forEach((tab) =>
+          tab.addEventListener("click", () => setActiveView(tab.dataset.view)),
+        );
+
+      function formatIndianNumberString(value) {
+        if (!value) return "";
+        const digits = value.replace(/\D/g, "");
+        if (digits.length <= 3) return digits;
+        const last3 = digits.slice(-3);
+        const other = digits.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+        return other + "," + last3;
+      }
+
+      function handleIndianInput(evt) {
+        const el = evt.target;
+        const old = el.value;
+        const start = el.selectionStart;
+        const digitsBefore = old.slice(0, start).replace(/\D/g, "").length;
+        const formatted = formatIndianNumberString(old);
+        let pos = 0,
+          count = 0;
+        for (let i = 0; i < formatted.length; i++) {
+          if (/\d/.test(formatted[i])) count++;
+          if (count === digitsBefore) {
+            pos = i + 1;
+            break;
+          }
+        }
+        if (digitsBefore === 0) pos = 0;
+        el.value = formatted;
+        el.setSelectionRange(pos, pos);
+      }
+
+      document
+        .getElementById("amount")
+        .addEventListener("input", handleIndianInput);
+      document
+        .getElementById("pata")
+        .addEventListener("input", handleIndianInput);
+
+      document.getElementById("calculate").addEventListener("click", (evt) => {
+        evt.preventDefault();
+        const amount =
+          Number(document.getElementById("amount").value.replace(/,/g, "")) ||
+          0;
+        const pata =
+          Number(document.getElementById("pata").value.replace(/,/g, "")) || 0;
+        const members = Number(document.getElementById("members").value) || 1;
+        const chittyCount =
+          Number(document.getElementById("chitty_count").value) || 1;
+        const rawThopudu = pata / members;
+        const roundedThopudu = Math.floor(rawThopudu);
+        const finalPay = Math.round(amount / members - roundedThopudu);
+        document.getElementById("rounded-thopudu").textContent = roundedThopudu;
+        document.getElementById("final-pay").textContent =
+          formatIndianNumberString(String(finalPay));
+        lastCalculation = {
+          amount,
+          pata,
+          members,
+          chittyCount,
+          roundedThopudu,
+          finalPay,
+        };
+      });
+
+      function generateReceiptImage(sizeMultiplier = 1) {
+        const canvas = document.getElementById("receipt-canvas");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#0f60d6";
+        ctx.lineWidth = 8;
+        ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+        ctx.strokeStyle = "#0f60d6";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(70, 120, canvas.width - 140, 520);
+        ctx.fillStyle = "#0f60d6";
+        ctx.font = `${Math.round(36 * sizeMultiplier)}px Arial`;
+        ctx.fillText("చీటీ రశీదు", 90, 90);
+        ctx.fillStyle = "#111";
+        ctx.font = `${Math.round(20 * sizeMultiplier)}px Arial`;
+        const lines = [
+          `చీటీ మొత్తం: ${formatIndianNumberString(String(lastCalculation.amount))}`,
+          `పాట: ${formatIndianNumberString(String(lastCalculation.pata))}`,
+          `చీటీ సంఖ్య: ${lastCalculation.chittyCount}`,
+          `తొపుడు: ${lastCalculation.roundedThopudu}`,
+          `చెల్లించవలసిన మొత్తం: ${formatIndianNumberString(String(lastCalculation.finalPay))}`,
+        ];
+        let y = 170;
+        const lineHeight = 38 * sizeMultiplier;
+        lines.forEach((line) => {
+          ctx.fillText(line, 110, y);
+          y += lineHeight;
+        });
+        ctx.font = `${Math.round(14 * sizeMultiplier)}px Arial`;
+        ctx.fillStyle = "#444";
+      }
+
+      function showReceiptPreviewModal() {
+        if (!lastCalculation) {
+          alert("Please calculate first");
+          return;
+        }
+        return new Promise((resolve) => {
+          let currentSize = 1.5;
+          const overlay = document.createElement("div");
+          overlay.style.cssText =
+            "position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;";
+          const card = document.createElement("div");
+          card.style.cssText =
+            "background:#0b1220;border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:24px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 18px 40px rgba(0,0,0,0.35);color:#e6eef8;";
+          card.innerHTML =
+            "<div style='font-size:1.05rem;margin-bottom:14px;font-weight:700;'>Receipt Preview</div>";
+          const previewCanvas = document.createElement("canvas");
+          previewCanvas.width = 400;
+          previewCanvas.height = 600;
+          previewCanvas.style.cssText =
+            "width:100%;border:1px solid rgba(255,255,255,0.2);border-radius:8px;margin-bottom:20px;background:#fff;";
+          const controlsDiv = document.createElement("div");
+          controlsDiv.style.cssText =
+            "display:flex;flex-direction:column;gap:12px;margin-bottom:20px;";
+          const labelDiv = document.createElement("div");
+          labelDiv.style.cssText = "display:flex;align-items:center;gap:12px;";
+          labelDiv.innerHTML =
+            "<span style='min-width:120px;'>Text Size:</span>";
+          const slider = document.createElement("input");
+          slider.type = "range";
+          slider.min = "0.5";
+          slider.max = "2.5";
+          slider.step = "0.1";
+          slider.value = "1.5";
+          slider.style.cssText =
+            "flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.15);outline:none;-webkit-appearance:slider-horizontal;";
+          const sizeValueDiv = document.createElement("span");
+          sizeValueDiv.style.cssText = "min-width:60px;text-align:right;";
+          sizeValueDiv.textContent = "150%";
+          labelDiv.append(slider, sizeValueDiv);
+          slider.addEventListener("input", (e) => {
+            currentSize = parseFloat(e.target.value);
+            sizeValueDiv.textContent = `${Math.round(currentSize * 100)}%`;
+            generateReceiptImage(currentSize);
+            const ctx = previewCanvas.getContext("2d");
+            ctx.drawImage(
+              document.getElementById("receipt-canvas"),
+              0,
+              0,
+              previewCanvas.width,
+              previewCanvas.height,
+            );
+          });
+          controlsDiv.appendChild(labelDiv);
+          const actions = document.createElement("div");
+          actions.style.cssText =
+            "display:flex;justify-content:flex-end;gap:10px;margin-top:18px;";
+          const cancel = document.createElement("button");
+          cancel.type = "button";
+          cancel.className = "btn outline";
+          cancel.textContent = "Cancel";
+          const downloadBtn = document.createElement("button");
+          downloadBtn.type = "button";
+          downloadBtn.className = "btn";
+          downloadBtn.textContent = "Download";
+          cancel.addEventListener("click", () => {
+            document.body.removeChild(overlay);
+            resolve();
+          });
+          downloadBtn.addEventListener("click", () => {
+            const canvas = document.getElementById("receipt-canvas");
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/jpeg", 0.95);
+            link.download = "chitty_receipt.jpg";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            document.body.removeChild(overlay);
+            resolve();
+          });
+          actions.append(cancel, downloadBtn);
+          card.append(controlsDiv, previewCanvas, actions);
+          overlay.appendChild(card);
+          document.body.appendChild(overlay);
+          generateReceiptImage(currentSize);
+          const ctx = previewCanvas.getContext("2d");
+          ctx.drawImage(
+            document.getElementById("receipt-canvas"),
+            0,
+            0,
+            previewCanvas.width,
+            previewCanvas.height,
+          );
+          slider.focus();
+        });
+      }
+
+      document.getElementById("download-img").addEventListener("click", () => {
+        showReceiptPreviewModal();
+      });
+
+      function escapeHTML(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function renderChittButtons() {
+        const container = document.getElementById("chitt-buttons");
+        container.innerHTML = "";
+        chitts.forEach((name) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "chitt-button";
+          btn.textContent = name;
+          btn.dataset.chitt = name;
+          if (name === selectedChitt) btn.classList.add("active");
+          btn.addEventListener("click", () => {
+            selectedChitt = name;
+            saveState();
+            renderChittButtons();
+            renderTable();
+          });
+          btn.addEventListener("dblclick", () => {
+            const nv = prompt("Rename chitt", name);
+            if (nv && nv !== name && !chitts.includes(nv)) {
+              const idx = chitts.indexOf(name);
+              chitts[idx] = nv;
+              users
+                .filter((u) => u.chitty_no === name)
+                .forEach((u) => (u.chitty_no = nv));
+              if (selectedChitt === name) selectedChitt = nv;
+              saveState();
+              renderChittButtons();
+              renderTable();
+            }
+          });
+          container.appendChild(btn);
+        });
+      }
+
+      function renderTable() {
+        ensurePayments();
+        const tableWrapper = document.getElementById("table-wrapper");
+        const noChittsMessage = document.getElementById("no-chitts-message");
+        if (!chitts.length) {
+          tableWrapper.style.display = "none";
+          noChittsMessage.style.display = "block";
+          return;
+        }
+        tableWrapper.style.display = "block";
+        noChittsMessage.style.display = "none";
+        const head = document.getElementById("table-head");
+        const row = document.createElement("tr");
+        ["Name", "Phone", "Chitty No"].forEach((text) => {
+          const th = document.createElement("th");
+          th.textContent = text;
+          row.appendChild(th);
+        });
+        months.forEach((m) => {
+          const th1 = document.createElement("th");
+          th1.textContent = `${m} Amount`;
+          row.appendChild(th1);
+          const th2 = document.createElement("th");
+          th2.textContent = `${m} Paid`;
+          row.appendChild(th2);
+        });
+        row.appendChild(
+          Object.assign(document.createElement("th"), {
+            textContent: "Actions",
+          }),
+        );
+        head.innerHTML = "";
+        head.appendChild(row);
+        const body = document.getElementById("table-body");
+        body.innerHTML = "";
+        users
+          .filter(
+            (u) => selectedChitt === "ALL" || u.chitty_no === selectedChitt,
+          )
+          .forEach((u) => {
+            const tr = document.createElement("tr");
+            tr.dataset.id = u.id;
+            tr.dataset.chitty = u.chitty_no;
+            tr.innerHTML = `
+      <td><input class="row-field" name="name" value="${escapeHTML(u.name)}"></td>
+      <td><input class="row-field" name="phone" value="${escapeHTML(u.phone)}"></td>
+      <td><input class="row-field" name="chitty_no" value="${escapeHTML(u.chitty_no)}"></td>
+    `;
+            months.forEach((m) => {
+              const amount = escapeHTML(u.payments[m]?.amount || "");
+              const paid = escapeHTML(u.payments[m]?.paid || "బాకీ");
+              const tdAmt = document.createElement("td");
+              tdAmt.innerHTML = `<input class="row-field" name="payment_${escapeHTML(m)}" value="${amount}">`;
+              const tdPaid = document.createElement("td");
+              tdPaid.innerHTML = `<select class="row-field" name="paid_${escapeHTML(m)}"><option value="చెల్లింది">చెల్లింది</option><option value="బాకీ">బాకీ</option></select>`;
+              tdPaid.querySelector("select").value = paid;
+              tr.appendChild(tdAmt);
+              tr.appendChild(tdPaid);
+            });
+            const actionTd = document.createElement("td");
+            actionTd.innerHTML =
+              '<button type="button" class="btn outline">Delete</button>';
+            actionTd.querySelector("button").addEventListener("click", () => {
+              if (confirm("Delete this member?")) {
+                const idx = users.findIndex((x) => x.id === u.id);
+                if (idx >= 0) {
+                  users.splice(idx, 1);
+                  saveState();
+                  renderTable();
+                }
+              }
+            });
+            tr.appendChild(actionTd);
+            tr.querySelectorAll("input,select").forEach((el) =>
+              el.addEventListener("change", handleRowChange),
+            );
+            body.appendChild(tr);
+          });
+      }
+
+      function handleRowChange(evt) {
+        const tr = evt.target.closest("tr");
+        const id = Number(tr.dataset.id);
+        const field = evt.target.name;
+        const value = evt.target.value;
+        const user = users.find((u) => u.id === id);
+        if (!user) return;
+        if (field === "name" || field === "phone") {
+          user[field] = value;
+          saveState();
+          return;
+        }
+        if (field === "chitty_no") {
+          user[field] = value;
+          saveState();
+          renderChittButtons();
+          renderTable();
+          return;
+        }
+        if (field.startsWith("payment_")) {
+          const month = field.slice(8);
+          if (!user.payments[month])
+            user.payments[month] = { amount: "", paid: "" };
+          user.payments[month].amount = value;
+          saveState();
+          return;
+        }
+        if (field.startsWith("paid_")) {
+          const month = field.slice(5);
+          if (!user.payments[month])
+            user.payments[month] = { amount: "", paid: "" };
+          user.payments[month].paid = value;
+          saveState();
+          return;
+        }
+      }
+
+      document.getElementById("add-row").addEventListener("click", () => {
+        users.push({
+          id: nextId++,
+          name: "New User",
+          phone: "",
+          chitty_no: selectedChitt,
+          payments: Object.fromEntries(
+            months.map((m) => [m, { amount: "", paid: "బాకీ" }]),
+          ),
+        });
+        saveState();
+        renderTable();
+      });
+
+      document.getElementById("add-chitt").addEventListener("click", () => {
+        const name = prompt("Enter new Chitt name (e.g. C6)");
+        if (!name || chitts.includes(name))
+          return alert("Invalid or duplicate chitt name");
+        chitts.push(name);
+        selectedChitt = name;
+        saveState();
+        renderChittButtons();
+        renderTable();
+      });
+
+      function askMonthToDelete() {
+        return new Promise((resolve) => {
+          const overlay = document.createElement("div");
+          overlay.style.cssText =
+            "position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;";
+          const card = document.createElement("div");
+          card.style.cssText =
+            "background:#0b1220;border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:24px;max-width:320px;width:100%;box-shadow:0 18px 40px rgba(0,0,0,0.35);color:#e6eef8;";
+          card.innerHTML =
+            "<div style='font-size:1.05rem;margin-bottom:14px;font-weight:700;'>Select month to delete</div>";
+          const select = document.createElement("select");
+          select.style.cssText =
+            "width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:#0b1220;color:#e6eef8;outline:none;";
+          months.forEach((m) => {
+            const option = document.createElement("option");
+            option.value = m;
+            option.textContent = m;
+            option.style.background = "#0b1220";
+            option.style.color = "#e6eef8";
+            select.appendChild(option);
+          });
+          const actions = document.createElement("div");
+          actions.style.cssText =
+            "display:flex;justify-content:flex-end;gap:10px;margin-top:18px;";
+          const cancel = document.createElement("button");
+          cancel.type = "button";
+          cancel.className = "btn outline";
+          cancel.textContent = "Cancel";
+          const confirmBtn = document.createElement("button");
+          confirmBtn.type = "button";
+          confirmBtn.className = "btn";
+          confirmBtn.textContent = "Delete";
+          cancel.addEventListener("click", () => {
+            document.body.removeChild(overlay);
+            resolve(null);
+          });
+          confirmBtn.addEventListener("click", () => {
+            document.body.removeChild(overlay);
+            resolve(select.value);
+          });
+          actions.append(cancel, confirmBtn);
+          card.append(select, actions);
+          overlay.appendChild(card);
+          document.body.appendChild(overlay);
+          select.focus();
+        });
+      }
+
+      function askChittToDelete() {
+        return new Promise((resolve) => {
+          const overlay = document.createElement("div");
+          overlay.style.cssText =
+            "position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;";
+          const card = document.createElement("div");
+          card.style.cssText =
+            "background:#0b1220;border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:24px;max-width:320px;width:100%;box-shadow:0 18px 40px rgba(0,0,0,0.35);color:#e6eef8;";
+          card.innerHTML =
+            "<div style='font-size:1.05rem;margin-bottom:14px;font-weight:700;'>Select chitti to delete</div>";
+          const select = document.createElement("select");
+          select.style.cssText =
+            "width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:#0b1220;color:#e6eef8;outline:none;";
+          chitts.forEach((c) => {
+            const option = document.createElement("option");
+            option.value = c;
+            option.textContent = c;
+            option.style.background = "#0b1220";
+            option.style.color = "#e6eef8";
+            select.appendChild(option);
+          });
+          const actions = document.createElement("div");
+          actions.style.cssText =
+            "display:flex;justify-content:flex-end;gap:10px;margin-top:18px;";
+          const cancel = document.createElement("button");
+          cancel.type = "button";
+          cancel.className = "btn outline";
+          cancel.textContent = "Cancel";
+          const confirmBtn = document.createElement("button");
+          confirmBtn.type = "button";
+          confirmBtn.className = "btn";
+          confirmBtn.textContent = "Delete";
+          cancel.addEventListener("click", () => {
+            document.body.removeChild(overlay);
+            resolve(null);
+          });
+          confirmBtn.addEventListener("click", () => {
+            document.body.removeChild(overlay);
+            resolve(select.value);
+          });
+          actions.append(cancel, confirmBtn);
+          card.append(select, actions);
+          overlay.appendChild(card);
+          document.body.appendChild(overlay);
+          select.focus();
+        });
+      }
+
+      function getOrdinal(number) {
+        const suffixes = ["th", "st", "nd", "rd"];
+        const v = number % 100;
+        return number + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+      }
+
+      document.getElementById("add-month").addEventListener("click", () => {
+        const nextNumber = months.length + 1;
+        const defaultLabel = `${getOrdinal(nextNumber)} month`;
+        const name = prompt("Enter month label or keep default:", defaultLabel);
+        if (name === null) return;
+        const finalName = name.trim() || defaultLabel;
+        if (!finalName || months.includes(finalName))
+          return alert("Invalid or duplicate month");
+        months.push(finalName);
+        users.forEach((u) => {
+          u.payments[finalName] = { amount: "", paid: "బాకీ" };
+        });
+        saveState();
+        renderTable();
+      });
+
+      document
+        .getElementById("delete-month")
+        .addEventListener("click", async () => {
+          if (!months.length) return alert("No months available to delete.");
+          const name = await askMonthToDelete();
+          if (!name) return;
+          if (!confirm(`Delete month ${name}?`)) return;
+          months = months.filter((m) => m !== name);
+          users.forEach((u) => {
+            delete u.payments[name];
+          });
+          saveState();
+          renderTable();
+        });
+
+      document
+        .getElementById("delete-chitt")
+        .addEventListener("click", async () => {
+          if (!chitts.length) return alert("No chittis available to delete.");
+          const name = await askChittToDelete();
+          if (!name) return;
+          if (!confirm(`Delete chitti ${name}?`)) return;
+          chitts = chitts.filter((c) => c !== name);
+          const replacement = chitts[0] || "";
+          users.forEach((u) => {
+            if (u.chitty_no === name) u.chitty_no = replacement;
+          });
+          if (selectedChitt === name) selectedChitt = replacement;
+          saveState();
+          renderChittButtons();
+          renderTable();
+        });
+
+      document.getElementById("export-csv").addEventListener("click", () => {
+        const headers = ["Name", "Phone", "Chitty No"];
+        months.forEach((m) => {
+          headers.push(`${m} Amount`, `${m} Paid`);
+        });
+        const rows = users.map((u) => {
+          const row = [u.name, u.phone, u.chitty_no];
+          months.forEach((m) => {
+            const p = u.payments[m] || { amount: "", paid: "" };
+            row.push(translateCsvValue(p.amount), translateCsvValue(p.paid));
+          });
+          return row
+            .map((v) => `"${String(translateCsvValue(v)).replace(/"/g, '""')}"`)
+            .join(",");
+        });
+        const csv = [headers.join(","), ...rows].join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "chitty_report.csv";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+
+      loadState();
+      renderChittButtons();
+      renderTable();
+    </script>
+  </body>
+</html>
